@@ -24,7 +24,12 @@
           </span>
         </a>
 
-        <button class="nav-toggle" id="navToggle" aria-label="Buka menu">
+        <button
+          class="nav-toggle"
+          id="navToggle"
+          type="button"
+          aria-label="Buka menu"
+        >
           <span></span>
           <span></span>
         </button>
@@ -163,10 +168,16 @@
         </div>
 
         <div class="category-tabs" id="categoryTabs" aria-label="Kategori menu">
-          <button class="tab active" data-category="all">Semua</button>
-          <button class="tab" data-category="main">Makanan</button>
-          <button class="tab" data-category="snack">Snack</button>
-          <button class="tab" data-category="drink">Minuman</button>
+          <button class="tab active" type="button" data-category="all">
+            Semua
+          </button>
+          <button class="tab" type="button" data-category="main">
+            Makanan
+          </button>
+          <button class="tab" type="button" data-category="snack">Snack</button>
+          <button class="tab" type="button" data-category="drink">
+            Minuman
+          </button>
         </div>
 
         <div class="menu-grid" id="menuGrid"></div>
@@ -196,7 +207,12 @@
       </section>
     </main>
 
-    <button class="cart-button" id="cartButton" aria-label="Lihat pesanan">
+    <button
+      class="cart-button"
+      id="cartButton"
+      type="button"
+      aria-label="Lihat pesanan"
+    >
       <span>Pesanan</span>
       <strong id="cartCount">0</strong>
     </button>
@@ -207,42 +223,58 @@
           <p class="eyebrow">Order Preview</p>
           <h2>Pesanan Anda</h2>
         </div>
-        <button class="icon-button" id="closeCart" aria-label="Tutup pesanan">
+
+        <button
+          class="icon-button"
+          id="closeCart"
+          type="button"
+          aria-label="Tutup pesanan"
+        >
           ×
         </button>
       </div>
 
-      <div class="cart-items" id="cartItems"></div>
+      <div class="cart-scroll-area">
+        <div class="cart-items" id="cartItems"></div>
 
-      <div class="order-form">
-        <label class="order-field">
-          <span>Nama Pemesan</span>
-          <input
-            type="text"
-            id="customerNameInput"
-            placeholder="Contoh: Amar"
-            autocomplete="name"
-          />
-        </label>
+        <section class="order-panel" aria-label="Detail pemesan">
+          <div class="order-panel-heading">
+            <span>Detail Pemesan</span>
+            <small>Wajib diisi sebelum pesan</small>
+          </div>
 
-        <label class="order-field">
-          <span>Nomor Meja</span>
-          <input
-            type="text"
-            id="tableNumberInput"
-            placeholder="Contoh: 03"
-            inputmode="numeric"
-          />
-        </label>
+          <div class="order-form">
+            <label class="order-field" for="customerNameInput">
+              <span>Nama Pemesan</span>
+              <input
+                type="text"
+                id="customerNameInput"
+                placeholder="Contoh: Amar"
+                autocomplete="name"
+              />
+            </label>
 
-        <label class="order-field order-field-full">
-          <span>Catatan</span>
-          <textarea
-            id="orderNoteInput"
-            rows="3"
-            placeholder="Contoh: sambal dipisah, es sedikit..."
-          ></textarea>
-        </label>
+            <label class="order-field" for="tableNumberInput">
+              <span>Nomor Meja</span>
+              <input
+                type="text"
+                id="tableNumberInput"
+                placeholder="Contoh: 03"
+                inputmode="numeric"
+                autocomplete="off"
+              />
+            </label>
+
+            <label class="order-field order-field-full" for="orderNoteInput">
+              <span>Catatan</span>
+              <textarea
+                id="orderNoteInput"
+                rows="3"
+                placeholder="Contoh: sambal dipisah, es sedikit..."
+              ></textarea>
+            </label>
+          </div>
+        </section>
       </div>
 
       <div class="cart-footer">
