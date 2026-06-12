@@ -214,6 +214,37 @@
 
       <div class="cart-items" id="cartItems"></div>
 
+      <div class="order-form">
+        <label class="order-field">
+          <span>Nama Pemesan</span>
+          <input
+            type="text"
+            id="customerNameInput"
+            placeholder="Contoh: Amar"
+            autocomplete="name"
+          />
+        </label>
+
+        <label class="order-field">
+          <span>Nomor Meja</span>
+          <input
+            type="text"
+            id="tableNumberInput"
+            placeholder="Contoh: 03"
+            inputmode="numeric"
+          />
+        </label>
+
+        <label class="order-field order-field-full">
+          <span>Catatan</span>
+          <textarea
+            id="orderNoteInput"
+            rows="3"
+            placeholder="Contoh: sambal dipisah, es sedikit..."
+          ></textarea>
+        </label>
+      </div>
+
       <div class="cart-footer">
         <div class="cart-total">
           <span>Total</span>

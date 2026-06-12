@@ -251,6 +251,10 @@ const cartCount = document.getElementById("cartCount");
 const cartTotal = document.getElementById("cartTotal");
 const checkoutButton = document.getElementById("checkoutButton");
 
+const customerNameInput = document.getElementById("customerNameInput");
+const tableNumberInput = document.getElementById("tableNumberInput");
+const orderNoteInput = document.getElementById("orderNoteInput");
+
 const navToggle = document.getElementById("navToggle");
 const navLinks = document.getElementById("navLinks");
 
@@ -273,6 +277,14 @@ const getInitial = (name) => {
     .join("")
     .slice(0, 2)
     .toUpperCase();
+};
+
+const getCartTotalPrice = () => {
+  return cart.reduce((sum, item) => sum + item.price * item.qty, 0);
+};
+
+const getCartTotalQty = () => {
+  return cart.reduce((sum, item) => sum + item.qty, 0);
 };
 
 const renderMenu = () => {
@@ -319,10 +331,10 @@ const renderMenu = () => {
             </div>
 
             <div class="card-actions">
-              <button class="add-button" data-id="${item.id}">
+              <button class="add-button" type="button" data-id="${item.id}">
                 Tambah
               </button>
-              <button class="detail-button" data-name="${item.name}">
+              <button class="detail-button" type="button" data-name="${item.name}">
                 Detail
               </button>
             </div>
@@ -375,9 +387,47 @@ const increaseCartItem = (id) => {
   renderCart();
 };
 
+const updateCheckoutLink = () => {
+  if (cart.length === 0) {
+    checkoutButton.href = "#";
+    checkoutButton.setAttribute("aria-disabled", "true");
+    return;
+  }
+
+  const customerName = customerNameInput?.value.trim() || "";
+  const tableNumber = tableNumberInput?.value.trim() || "";
+  const orderNote = orderNoteInput?.value.trim() || "";
+  const totalPrice = getCartTotalPrice();
+
+  const orderText = cart
+    .map((item) => {
+      const subtotal = item.price * item.qty;
+      return `- ${item.name} x${item.qty} = ${formatCurrency(subtotal)}`;
+    })
+    .join("\n");
+
+  const message = encodeURIComponent(
+    [
+      "Halo Panama Corner, saya ingin pesan:",
+      "",
+      `Nama: ${customerName || "-"}`,
+      `Meja: ${tableNumber || "-"}`,
+      "",
+      "Pesanan:",
+      orderText,
+      "",
+      `Total: ${formatCurrency(totalPrice)}`,
+      `Catatan: ${orderNote || "-"}`,
+    ].join("\n"),
+  );
+
+  checkoutButton.href = `https://wa.me/${whatsappNumber}?text=${message}`;
+  checkoutButton.removeAttribute("aria-disabled");
+};
+
 const renderCart = () => {
-  const totalQty = cart.reduce((sum, item) => sum + item.qty, 0);
-  const totalPrice = cart.reduce((sum, item) => sum + item.price * item.qty, 0);
+  const totalQty = getCartTotalQty();
+  const totalPrice = getCartTotalPrice();
 
   cartCount.textContent = totalQty;
   cartTotal.textContent = formatCurrency(totalPrice);
@@ -389,8 +439,7 @@ const renderCart = () => {
       </p>
     `;
 
-    checkoutButton.href = "#";
-    checkoutButton.setAttribute("aria-disabled", "true");
+    updateCheckoutLink();
     return;
   }
 
@@ -404,27 +453,16 @@ const renderCart = () => {
           </div>
 
           <div class="qty-control">
-            <button data-action="decrease" data-id="${item.id}">−</button>
+            <button type="button" data-action="decrease" data-id="${item.id}">−</button>
             <strong>${item.qty}</strong>
-            <button data-action="increase" data-id="${item.id}">+</button>
+            <button type="button" data-action="increase" data-id="${item.id}">+</button>
           </div>
         </div>
       `,
     )
     .join("");
 
-  const orderText = cart
-    .map((item) => `- ${item.name} x${item.qty}`)
-    .join("\n");
-
-  const message = encodeURIComponent(
-    `Halo Panama Corner, saya ingin pesan:\n${orderText}\n\nTotal: ${formatCurrency(
-      totalPrice,
-    )}`,
-  );
-
-  checkoutButton.href = `https://wa.me/${whatsappNumber}?text=${message}`;
-  checkoutButton.removeAttribute("aria-disabled");
+  updateCheckoutLink();
 };
 
 const openCart = () => {
@@ -458,6 +496,10 @@ categoryTabs.addEventListener("click", (event) => {
 
 searchInput.addEventListener("input", renderMenu);
 
+customerNameInput?.addEventListener("input", updateCheckoutLink);
+tableNumberInput?.addEventListener("input", updateCheckoutLink);
+orderNoteInput?.addEventListener("input", updateCheckoutLink);
+
 menuGrid.addEventListener("click", (event) => {
   const addButton = event.target.closest(".add-button");
   const detailButton = event.target.closest(".detail-button");
@@ -486,6 +528,25 @@ cartItems.addEventListener("click", (event) => {
   if (button.dataset.action === "decrease") {
     decreaseCartItem(id);
   }
+});
+
+checkoutButton.addEventListener("click", (event) => {
+  if (cart.length === 0) {
+    event.preventDefault();
+    alert("Silakan pilih menu terlebih dahulu.");
+    return;
+  }
+
+  const customerName = customerNameInput?.value.trim() || "";
+  const tableNumber = tableNumberInput?.value.trim() || "";
+
+  if (!customerName || !tableNumber) {
+    event.preventDefault();
+    alert("Mohon isi nama pemesan dan nomor meja terlebih dahulu.");
+    return;
+  }
+
+  updateCheckoutLink();
 });
 
 cartButton.addEventListener("click", openCart);
