@@ -33,7 +33,7 @@ const defaultConfig = {
   restaurantName: "Panama Corner",
   brandSubtitle: "Food & Drink Menu",
 
-  whatsappNumber: "6281234567890",
+  whatsappNumber: "",
   whatsappGreeting: "Halo Panama Corner, saya ingin pesan:",
   directWhatsappMessage: "Halo Panama Corner, saya ingin pesan.",
 
@@ -99,6 +99,10 @@ const escapeHtml = (value) => {
     .replaceAll("'", "&#039;");
 };
 
+const getWhatsappNumber = () => {
+  return String(config.whatsappNumber || "").replace(/\D/g, "");
+};
+
 const getCartTotalPrice = () => {
   return cart.reduce((sum, item) => sum + item.price * item.qty, 0);
 };
@@ -136,12 +140,18 @@ const setCheckoutDisabled = (isDisabled) => {
 };
 
 const buildDirectWhatsappUrl = () => {
+  const whatsappNumber = getWhatsappNumber();
+
+  if (!whatsappNumber) {
+    return "#";
+  }
+
   const message = encodeURIComponent(
     config.directWhatsappMessage ||
       `Halo ${config.restaurantName}, saya ingin pesan.`,
   );
 
-  return `https://wa.me/${config.whatsappNumber}?text=${message}`;
+  return `https://wa.me/${whatsappNumber}?text=${message}`;
 };
 
 const applyConfigToPage = () => {
@@ -164,12 +174,22 @@ const applyConfigToPage = () => {
   setText(menuCountLabel, `${menus.length}+`);
   setText(startPriceLabel, formatShortPrice(getMinimumMenuPrice()));
 
+  const whatsappNumber = getWhatsappNumber();
+
   if (directWhatsappButton) {
     directWhatsappButton.href = buildDirectWhatsappUrl();
     directWhatsappButton.setAttribute(
       "aria-label",
       `Hubungi ${config.restaurantName} melalui WhatsApp`,
     );
+
+    if (!whatsappNumber) {
+      directWhatsappButton.setAttribute("aria-disabled", "true");
+      directWhatsappButton.classList.add("is-disabled");
+    } else {
+      directWhatsappButton.removeAttribute("aria-disabled");
+      directWhatsappButton.classList.remove("is-disabled");
+    }
   }
 
   setText(
@@ -197,6 +217,8 @@ const renderMenu = () => {
 
     return matchesCategory && matchesKeyword;
   });
+
+  if (!menuGrid) return;
 
   menuGrid.innerHTML = filteredItems
     .map((item) => {
@@ -322,8 +344,15 @@ const updateCheckoutLink = () => {
     return;
   }
 
+  const whatsappNumber = getWhatsappNumber();
+
+  if (!whatsappNumber) {
+    setCheckoutDisabled(true);
+    return;
+  }
+
   const message = encodeURIComponent(buildWhatsappMessage());
-  checkoutButton.href = `https://wa.me/${config.whatsappNumber}?text=${message}`;
+  checkoutButton.href = `https://wa.me/${whatsappNumber}?text=${message}`;
   setCheckoutDisabled(false);
 };
 
@@ -338,6 +367,8 @@ const renderCart = () => {
   if (cartTotal) {
     cartTotal.textContent = formatCurrency(totalPrice);
   }
+
+  if (!cartItems) return;
 
   if (cart.length === 0) {
     cartItems.innerHTML = `
@@ -373,6 +404,8 @@ const renderCart = () => {
 };
 
 const openCart = () => {
+  if (!cartDrawer || !overlay) return;
+
   cartDrawer.classList.add("open");
   overlay.classList.add("show");
   cartDrawer.setAttribute("aria-hidden", "false");
@@ -380,13 +413,15 @@ const openCart = () => {
 };
 
 const closeCartDrawer = () => {
+  if (!cartDrawer || !overlay) return;
+
   cartDrawer.classList.remove("open");
   overlay.classList.remove("show");
   cartDrawer.setAttribute("aria-hidden", "true");
   document.body.classList.remove("no-scroll");
 };
 
-categoryTabs.addEventListener("click", (event) => {
+categoryTabs?.addEventListener("click", (event) => {
   const button = event.target.closest(".tab");
   if (!button) return;
 
@@ -407,7 +442,7 @@ customerNameInput?.addEventListener("input", updateCheckoutLink);
 tableNumberInput?.addEventListener("input", updateCheckoutLink);
 orderNoteInput?.addEventListener("input", updateCheckoutLink);
 
-menuGrid.addEventListener("click", (event) => {
+menuGrid?.addEventListener("click", (event) => {
   const addButton = event.target.closest(".add-button");
   const detailButton = event.target.closest(".detail-button");
 
@@ -423,7 +458,7 @@ menuGrid.addEventListener("click", (event) => {
   }
 });
 
-cartItems.addEventListener("click", (event) => {
+cartItems?.addEventListener("click", (event) => {
   const button = event.target.closest("button");
   if (!button) return;
 
@@ -438,10 +473,18 @@ cartItems.addEventListener("click", (event) => {
   }
 });
 
-checkoutButton.addEventListener("click", (event) => {
+checkoutButton?.addEventListener("click", (event) => {
   if (cart.length === 0) {
     event.preventDefault();
     alert("Silakan pilih menu terlebih dahulu.");
+    return;
+  }
+
+  const whatsappNumber = getWhatsappNumber();
+
+  if (!whatsappNumber) {
+    event.preventDefault();
+    alert("Nomor WhatsApp belum diatur di config.js.");
     return;
   }
 
@@ -457,18 +500,27 @@ checkoutButton.addEventListener("click", (event) => {
   updateCheckoutLink();
 });
 
-cartButton.addEventListener("click", openCart);
-closeCart.addEventListener("click", closeCartDrawer);
-overlay.addEventListener("click", closeCartDrawer);
+directWhatsappButton?.addEventListener("click", (event) => {
+  const whatsappNumber = getWhatsappNumber();
 
-navToggle.addEventListener("click", () => {
-  navLinks.classList.toggle("open");
+  if (!whatsappNumber) {
+    event.preventDefault();
+    alert("Nomor WhatsApp belum diatur di config.js.");
+  }
+});
+
+cartButton?.addEventListener("click", openCart);
+closeCart?.addEventListener("click", closeCartDrawer);
+overlay?.addEventListener("click", closeCartDrawer);
+
+navToggle?.addEventListener("click", () => {
+  navLinks?.classList.toggle("open");
 });
 
 document.addEventListener("keydown", (event) => {
   if (event.key === "Escape") {
     closeCartDrawer();
-    navLinks.classList.remove("open");
+    navLinks?.classList.remove("open");
   }
 });
 
