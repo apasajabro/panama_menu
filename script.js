@@ -16,6 +16,9 @@ const customerNameInput = document.getElementById("customerNameInput");
 const tableNumberInput = document.getElementById("tableNumberInput");
 const orderNoteInput = document.getElementById("orderNoteInput");
 
+const paymentMethodsContainer = document.getElementById("paymentMethods");
+const paymentInstruction = document.getElementById("paymentInstruction");
+
 const navToggle = document.getElementById("navToggle");
 const navLinks = document.getElementById("navLinks");
 
@@ -39,12 +42,25 @@ const defaultConfig = {
 
   heroTitle: "Menu favorit untuk makan santai dan ngopi nyaman.",
   heroDescription:
-    "Pilih makanan, snack, dan minuman favorit Panama Corner langsung dari layar HP. Harga jelas, tampilan rapi, dan pesanan bisa dikirim lewat WhatsApp.",
+    "Pilih makanan, snack, dan minuman favorit Panama Corner langsung dari layar HP.",
 
   currency: "IDR",
   locale: "id-ID",
 
   footerYear: "2026",
+
+  paymentMethods: [
+    {
+      id: "cashier",
+      name: "Bayar di Kasir",
+      shortLabel: "Kasir",
+      description: "Bayar langsung di kasir setelah pesanan dikonfirmasi.",
+      instruction:
+        "Silakan lakukan pembayaran langsung di kasir Panama Corner setelah pesanan dikonfirmasi.",
+      type: "offline",
+      isRecommended: true,
+    },
+  ],
 };
 
 const config =
@@ -59,8 +75,16 @@ const menus = Array.isArray(typeof menuItems !== "undefined" ? menuItems : [])
   ? menuItems
   : [];
 
+const paymentMethods = Array.isArray(config.paymentMethods)
+  ? config.paymentMethods
+  : defaultConfig.paymentMethods;
+
 let activeCategory = "all";
 let cart = [];
+let selectedPaymentMethodId =
+  paymentMethods.find((method) => method.isRecommended)?.id ||
+  paymentMethods[0]?.id ||
+  "";
 
 const formatCurrency = (value) => {
   return new Intl.NumberFormat(config.locale, {
@@ -101,6 +125,14 @@ const escapeHtml = (value) => {
 
 const getWhatsappNumber = () => {
   return String(config.whatsappNumber || "").replace(/\D/g, "");
+};
+
+const getSelectedPaymentMethod = () => {
+  return (
+    paymentMethods.find((method) => method.id === selectedPaymentMethodId) ||
+    paymentMethods[0] ||
+    null
+  );
 };
 
 const getCartTotalPrice = () => {
@@ -321,6 +353,149 @@ const animateCartButton = () => {
   });
 };
 
+const renderPaymentMethods = () => {
+  if (!paymentMethodsContainer) return;
+
+  paymentMethodsContainer.innerHTML = paymentMethods
+    .map((method) => {
+      const isSelected = method.id === selectedPaymentMethodId;
+
+      return `
+        <button
+          class="payment-method ${isSelected ? "active" : ""}"
+          type="button"
+          data-payment-id="${escapeHtml(method.id)}"
+          aria-pressed="${isSelected ? "true" : "false"}"
+        >
+          <span>${escapeHtml(method.shortLabel || method.name)}</span>
+          <small>${escapeHtml(method.description || "")}</small>
+        </button>
+      `;
+    })
+    .join("");
+
+  renderPaymentInstruction();
+};
+
+const renderBankAccounts = (accounts) => {
+  if (!Array.isArray(accounts) || accounts.length === 0) return "";
+
+  return `
+    <div class="bank-account-list">
+      ${accounts
+        .map(
+          (account) => `
+            <div class="bank-account-card">
+              <span>${escapeHtml(account.bankName)}</span>
+              <strong>${escapeHtml(account.accountNumber)}</strong>
+              <small>a.n. ${escapeHtml(account.accountHolder)}</small>
+              <button
+                type="button"
+                class="copy-account-button"
+                data-copy="${escapeHtml(account.accountNumber)}"
+              >
+                Salin Rekening
+              </button>
+            </div>
+          `,
+        )
+        .join("")}
+    </div>
+  `;
+};
+
+const renderPaymentInstruction = () => {
+  if (!paymentInstruction) return;
+
+  const selectedMethod = getSelectedPaymentMethod();
+
+  if (!selectedMethod) {
+    paymentInstruction.hidden = true;
+    paymentInstruction.innerHTML = "";
+    return;
+  }
+
+  const qrImage =
+    selectedMethod.type === "qris" && selectedMethod.qrImage
+      ? `
+        <div class="qris-preview">
+          <img
+            src="${escapeHtml(selectedMethod.qrImage)}"
+            alt="QRIS ${escapeHtml(config.restaurantName)}"
+            loading="lazy"
+            onerror="this.closest('.qris-preview').innerHTML='<div class=&quot;qris-fallback&quot;>QRIS belum tersedia</div>'"
+          />
+        </div>
+      `
+      : "";
+
+  const bankAccounts =
+    selectedMethod.type === "bank"
+      ? renderBankAccounts(selectedMethod.accounts)
+      : "";
+
+  paymentInstruction.hidden = false;
+  paymentInstruction.innerHTML = `
+    <div class="payment-instruction-card">
+      <div>
+        <strong>${escapeHtml(selectedMethod.name)}</strong>
+        <p>${escapeHtml(selectedMethod.instruction || "")}</p>
+      </div>
+
+      ${qrImage}
+      ${bankAccounts}
+
+      ${
+        selectedMethod.note
+          ? `<small class="payment-note">${escapeHtml(selectedMethod.note)}</small>`
+          : ""
+      }
+
+      ${
+        selectedMethod.type === "qris" || selectedMethod.type === "bank"
+          ? `<small class="payment-warning">Pesanan diproses setelah pembayaran dikonfirmasi oleh kasir.</small>`
+          : ""
+      }
+    </div>
+  `;
+};
+
+const buildPaymentText = () => {
+  const selectedMethod = getSelectedPaymentMethod();
+
+  if (!selectedMethod) {
+    return ["Metode Pembayaran: -"];
+  }
+
+  const lines = [
+    `Metode Pembayaran: ${selectedMethod.name}`,
+    `Instruksi: ${selectedMethod.instruction || "-"}`,
+  ];
+
+  if (
+    selectedMethod.type === "bank" &&
+    Array.isArray(selectedMethod.accounts)
+  ) {
+    lines.push("");
+    lines.push("Rekening Tujuan:");
+
+    selectedMethod.accounts.forEach((account) => {
+      lines.push(
+        `- ${account.bankName}: ${account.accountNumber} a.n. ${account.accountHolder}`,
+      );
+    });
+  }
+
+  if (selectedMethod.type === "qris" || selectedMethod.type === "bank") {
+    lines.push("");
+    lines.push(
+      "Saya akan mengirim screenshot bukti pembayaran melalui chat WhatsApp ini.",
+    );
+  }
+
+  return lines;
+};
+
 const buildWhatsappMessage = () => {
   const customerName = customerNameInput?.value.trim() || "";
   const tableNumber = tableNumberInput?.value.trim() || "";
@@ -345,6 +520,8 @@ const buildWhatsappMessage = () => {
     "",
     `Total: ${formatCurrency(totalPrice)}`,
     `Catatan: ${orderNote || "-"}`,
+    "",
+    ...buildPaymentText(),
   ].join("\n");
 };
 
@@ -452,6 +629,34 @@ customerNameInput?.addEventListener("input", updateCheckoutLink);
 tableNumberInput?.addEventListener("input", updateCheckoutLink);
 orderNoteInput?.addEventListener("input", updateCheckoutLink);
 
+paymentMethodsContainer?.addEventListener("click", (event) => {
+  const button = event.target.closest("[data-payment-id]");
+  if (!button) return;
+
+  selectedPaymentMethodId = button.dataset.paymentId || "";
+  renderPaymentMethods();
+  updateCheckoutLink();
+});
+
+paymentInstruction?.addEventListener("click", async (event) => {
+  const button = event.target.closest(".copy-account-button");
+  if (!button) return;
+
+  const value = button.dataset.copy || "";
+
+  if (!value) return;
+
+  try {
+    await navigator.clipboard.writeText(value);
+    button.textContent = "Tersalin";
+    window.setTimeout(() => {
+      button.textContent = "Salin Rekening";
+    }, 1200);
+  } catch (_) {
+    alert(`Nomor rekening: ${value}`);
+  }
+});
+
 menuGrid?.addEventListener("click", (event) => {
   const addButton = event.target.closest(".add-button");
   const detailButton = event.target.closest(".detail-button");
@@ -507,6 +712,12 @@ checkoutButton?.addEventListener("click", (event) => {
     return;
   }
 
+  if (!getSelectedPaymentMethod()) {
+    event.preventDefault();
+    alert("Mohon pilih metode pembayaran terlebih dahulu.");
+    return;
+  }
+
   updateCheckoutLink();
 });
 
@@ -536,4 +747,5 @@ document.addEventListener("keydown", (event) => {
 
 applyConfigToPage();
 renderMenu();
+renderPaymentMethods();
 renderCart();

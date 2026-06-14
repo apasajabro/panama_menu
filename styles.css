@@ -1181,3 +1181,183 @@ img {
     transform: scale(1);
   }
 }
+
+.payment-panel {
+  border-top: 1px solid var(--line);
+  background: rgba(255, 255, 255, 0.025);
+}
+
+.order-panel-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 16px 22px 0;
+}
+
+.order-panel-heading span {
+  color: var(--text);
+  font-weight: 900;
+}
+
+.order-panel-heading small {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.payment-methods {
+  display: grid;
+  gap: 10px;
+  padding: 16px 22px;
+}
+
+.payment-method {
+  width: 100%;
+  display: grid;
+  gap: 6px;
+  text-align: left;
+  padding: 14px;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.055);
+  color: var(--text);
+  cursor: pointer;
+  transition:
+    border-color 180ms ease,
+    background 180ms ease,
+    transform 180ms ease;
+}
+
+.payment-method:hover {
+  transform: translateY(-1px);
+  border-color: rgba(244, 210, 143, 0.38);
+}
+
+.payment-method.active {
+  border-color: rgba(244, 210, 143, 0.78);
+  background: rgba(244, 210, 143, 0.14);
+}
+
+.payment-method span {
+  font-weight: 950;
+}
+
+.payment-method small {
+  color: var(--muted);
+  line-height: 1.45;
+}
+
+.payment-instruction {
+  padding: 0 22px 18px;
+}
+
+.payment-instruction-card {
+  display: grid;
+  gap: 14px;
+  padding: 16px;
+  border: 1px solid rgba(244, 210, 143, 0.2);
+  border-radius: 18px;
+  background: rgba(6, 21, 13, 0.42);
+}
+
+.payment-instruction-card strong {
+  display: block;
+  color: var(--gold);
+  font-size: 15px;
+}
+
+.payment-instruction-card p {
+  margin: 7px 0 0;
+  color: var(--muted);
+  line-height: 1.65;
+  font-size: 13px;
+}
+
+.qris-preview {
+  overflow: hidden;
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.92);
+}
+
+.qris-preview img {
+  width: 100%;
+  max-width: 260px;
+  margin: 0 auto;
+  border-radius: 12px;
+}
+
+.qris-fallback {
+  min-height: 160px;
+  display: grid;
+  place-items: center;
+  border-radius: 14px;
+  color: #201207;
+  background: rgba(32, 18, 7, 0.08);
+  font-weight: 900;
+}
+
+.bank-account-list {
+  display: grid;
+  gap: 10px;
+}
+
+.bank-account-card {
+  display: grid;
+  gap: 5px;
+  padding: 13px;
+  border: 1px solid var(--line);
+  border-radius: 15px;
+  background: rgba(255, 255, 255, 0.055);
+}
+
+.bank-account-card span {
+  color: var(--gold);
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.bank-account-card strong {
+  color: var(--text);
+  font-size: 17px;
+  letter-spacing: 0.04em;
+}
+
+.bank-account-card small {
+  color: var(--muted);
+}
+
+.copy-account-button {
+  width: fit-content;
+  min-height: 34px;
+  margin-top: 6px;
+  padding: 0 12px;
+  border: 1px solid rgba(244, 210, 143, 0.28);
+  border-radius: 999px;
+  background: rgba(244, 210, 143, 0.12);
+  color: var(--gold);
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.payment-note,
+.payment-warning {
+  display: block;
+  padding: 11px 12px;
+  border-radius: 14px;
+  line-height: 1.5;
+  font-size: 12px;
+}
+
+.payment-note {
+  color: rgba(255, 248, 239, 0.78);
+  background: rgba(255, 255, 255, 0.055);
+}
+
+.payment-warning {
+  color: #201207;
+  background: rgba(244, 210, 143, 0.86);
+  font-weight: 800;
+}
