@@ -285,7 +285,17 @@
             <small>Pilih sebelum kirim pesanan</small>
           </div>
 
-          <div class="payment-methods" id="paymentMethods"></div>
+          <div class="payment-select-wrap">
+            <label class="payment-select-field" for="paymentMethodSelect">
+              <span>Pilih pembayaran</span>
+              <select
+                id="paymentMethodSelect"
+                aria-label="Pilih metode pembayaran"
+              >
+                <option value="">Memuat metode pembayaran...</option>
+              </select>
+            </label>
+          </div>
 
           <div class="payment-instruction" id="paymentInstruction" hidden></div>
         </section>

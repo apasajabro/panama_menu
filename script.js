@@ -354,22 +354,16 @@ const animateCartButton = () => {
 };
 
 const renderPaymentMethods = () => {
-  if (!paymentMethodsContainer) return;
+  if (!paymentMethodSelect) return;
 
-  paymentMethodsContainer.innerHTML = paymentMethods
+  paymentMethodSelect.innerHTML = paymentMethods
     .map((method) => {
       const isSelected = method.id === selectedPaymentMethodId;
 
       return `
-        <button
-          class="payment-method ${isSelected ? "active" : ""}"
-          type="button"
-          data-payment-id="${escapeHtml(method.id)}"
-          aria-pressed="${isSelected ? "true" : "false"}"
-        >
-          <span>${escapeHtml(method.shortLabel || method.name)}</span>
-          <small>${escapeHtml(method.description || "")}</small>
-        </button>
+        <option value="${escapeHtml(method.id)}" ${isSelected ? "selected" : ""}>
+          ${escapeHtml(method.name)}
+        </option>
       `;
     })
     .join("");
@@ -629,12 +623,9 @@ customerNameInput?.addEventListener("input", updateCheckoutLink);
 tableNumberInput?.addEventListener("input", updateCheckoutLink);
 orderNoteInput?.addEventListener("input", updateCheckoutLink);
 
-paymentMethodsContainer?.addEventListener("click", (event) => {
-  const button = event.target.closest("[data-payment-id]");
-  if (!button) return;
-
-  selectedPaymentMethodId = button.dataset.paymentId || "";
-  renderPaymentMethods();
+paymentMethodSelect?.addEventListener("change", (event) => {
+  selectedPaymentMethodId = event.target.value || "";
+  renderPaymentInstruction();
   updateCheckoutLink();
 });
 
