@@ -26,6 +26,50 @@
             <section class="menu-panel"><div class="panel-heading"><div><p>FITUR</p><h2>Pemesanan</h2><span>Kontrol fitur pemesanan pada homepage.</span></div></div><label class="feature-toggle-card" for="ordersEnabled"><div><strong>Aktifkan pemesanan</strong><span>Jika nonaktif, seluruh tombol Tambah dan keranjang disembunyikan.</span></div><input id="ordersEnabled" type="checkbox" /><i aria-hidden="true"></i></label></section>
             <p id="settingsMessage" class="form-message" role="status" hidden></p><button id="saveSettingsButton" class="primary-button settings-save" type="submit">Simpan Pengaturan</button>
           </form>
+
+          <div class="content-header" style="margin-top: 2rem;">
+            <h2>Keamanan &amp; Akun Admin</h2>
+          </div>
+          <form id="profileForm" class="settings-layout">
+            <section class="menu-panel">
+              <div class="panel-heading">
+                <div>
+                  <p>ADMINISTRATOR</p>
+                  <h2>Detail Profil</h2>
+                  <span>Perbarui nama lengkap dan alamat email login Anda.</span>
+                </div>
+              </div>
+              <div class="menu-form embedded-form">
+                <label>Nama Lengkap
+                  <input type="text" id="adminNameInput" minlength="3" maxlength="100" required />
+                </label>
+                <label>Alamat Email
+                  <input type="email" id="adminEmailInput" required />
+                </label>
+              </div>
+            </section>
+
+            <section class="menu-panel">
+              <div class="panel-heading">
+                <div>
+                  <p>KEAMANAN</p>
+                  <h2>Ubah Password</h2>
+                  <span>Kosongkan jika Anda tidak ingin mengubah password saat ini.</span>
+                </div>
+              </div>
+              <div class="menu-form embedded-form">
+                <label>Password Saat Ini
+                  <input type="password" id="currentPasswordInput" />
+                </label>
+                <label>Password Baru (Minimal 12 karakter)
+                  <input type="password" id="newPasswordInput" minlength="12" />
+                </label>
+              </div>
+            </section>
+
+            <p id="profileMessage" class="form-message" role="status" hidden></p>
+            <button id="saveProfileButton" class="primary-button settings-save" type="submit">Perbarui Akun</button>
+          </form>
         </main>
       </div>
     </div>
