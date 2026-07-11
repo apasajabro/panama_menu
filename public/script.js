@@ -389,6 +389,19 @@ const renderMenu = () => {
   if (emptyState) {
     emptyState.hidden = filteredItems.length > 0;
   }
+
+  // Handle cached images and register load events dynamically to avoid stuck shimmer states
+  menuGrid.querySelectorAll(".menu-image-main").forEach((img) => {
+    if (img.complete) {
+      img.classList.add("loaded");
+    } else {
+      img.addEventListener("load", () => img.classList.add("loaded"));
+      img.addEventListener("error", () => {
+        // Fallback already handled by global capture, but hide shimmer
+        img.classList.add("loaded");
+      });
+    }
+  });
 };
 
 const getCategoryLabel = (item) =>
@@ -404,10 +417,20 @@ const openMenuDetail = (id) => {
   detailPreviousFocus = document.activeElement;
   const initial = getInitial(item.name);
   const image = item.image
-    ? `<div class="shimmer-placeholder"></div><img class="menu-detail-image" src="${escapeHtml(item.image)}" alt="${escapeHtml(item.name)}" data-detail-initial="${initial}" onload="this.classList.add('loaded')">`
+    ? `<div class="shimmer-placeholder"></div><img class="menu-detail-image" src="${escapeHtml(item.image)}" alt="${escapeHtml(item.name)}" data-detail-initial="${initial}">`
     : `<div class="menu-detail-fallback">${initial}</div>`;
 
   menuDetailMedia.innerHTML = image;
+  
+  const detailImg = menuDetailMedia.querySelector(".menu-detail-image");
+  if (detailImg) {
+    if (detailImg.complete) {
+      detailImg.classList.add("loaded");
+    } else {
+      detailImg.addEventListener("load", () => detailImg.classList.add("loaded"));
+      detailImg.addEventListener("error", () => detailImg.classList.add("loaded"));
+    }
+  }
   setText(menuDetailCategory, getCategoryLabel(item));
   setText(menuDetailTitle, item.name);
   setText(menuDetailPrice, formatCurrency(item.price));
