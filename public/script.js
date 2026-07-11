@@ -351,7 +351,6 @@ const renderMenu = () => {
       return `
         <article class="menu-card">
           <div class="menu-image-stage">
-            <div class="shimmer-placeholder"></div>
             <img
               class="menu-image-main"
               src="${safeImage}"
@@ -360,6 +359,7 @@ const renderMenu = () => {
               data-menu-initial="${initial}"
               onload="this.classList.add('loaded')"
             />
+            <div class="shimmer-placeholder"></div>
           </div>
 
           <div class="menu-card-body">
@@ -417,7 +417,7 @@ const openMenuDetail = (id) => {
   detailPreviousFocus = document.activeElement;
   const initial = getInitial(item.name);
   const image = item.image
-    ? `<div class="shimmer-placeholder"></div><img class="menu-detail-image" src="${escapeHtml(item.image)}" alt="${escapeHtml(item.name)}" data-detail-initial="${initial}">`
+    ? `<img class="menu-detail-image" src="${escapeHtml(item.image)}" alt="${escapeHtml(item.name)}" data-detail-initial="${initial}"><div class="shimmer-placeholder"></div>`
     : `<div class="menu-detail-fallback">${initial}</div>`;
 
   menuDetailMedia.innerHTML = image;
