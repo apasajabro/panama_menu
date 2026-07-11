@@ -7,10 +7,20 @@ export const originGuard = (req, _res, next) => {
   if (SAFE_METHODS.has(req.method)) return next();
 
   const origin = req.get("origin");
-  if (origin && origin !== env.CLIENT_ORIGIN) {
-    return next(new HttpError(403, "Origin permintaan tidak diizinkan."));
+  if (!origin) return next();
+
+  // Bersihkan tanda kutip jika ada di variabel env
+  const configuredOrigin = env.CLIENT_ORIGIN.replace(/^["']|["']$/g, "");
+
+  // Deteksi same-origin secara dinamis (mendukung proxy HTTPS seperti Render)
+  const host = req.get("host");
+  const protocol = req.headers["x-forwarded-proto"] || req.protocol;
+  const selfOrigin = `${protocol}://${host}`;
+
+  if (origin === configuredOrigin || origin === selfOrigin) {
+    return next();
   }
 
-  return next();
+  return next(new HttpError(403, "Origin permintaan tidak diizinkan."));
 };
 
