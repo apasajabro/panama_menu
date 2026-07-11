@@ -525,6 +525,34 @@ img {
   object-position: center;
   filter: saturate(1.03) contrast(1.02);
   transform: scale(1.01);
+  opacity: 0;
+  transition: opacity 0.45s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.menu-image-main.loaded {
+  opacity: 1;
+}
+
+/* Shimmer Loading placeholders */
+.shimmer-placeholder {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, rgba(255,255,255,0.03) 25%, rgba(255,255,255,0.09) 50%, rgba(255,255,255,0.03) 75%);
+  background-size: 200% 100%;
+  animation: shimmer-load 1.5s infinite linear;
+  z-index: 1;
+  transition: opacity 0.35s ease;
+}
+
+.menu-image-main.loaded + .shimmer-placeholder,
+.menu-detail-image.loaded + .shimmer-placeholder {
+  opacity: 0;
+  pointer-events: none;
+}
+
+@keyframes shimmer-load {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
 }
 
 .menu-image-stage::after {
@@ -716,6 +744,7 @@ img {
 }
 
 .menu-detail-media {
+  position: relative;
   min-height: 520px;
   overflow: hidden;
   background:
@@ -723,11 +752,17 @@ img {
     var(--bg-soft);
 }
 
-.menu-detail-media img {
+.menu-detail-image {
   width: 100%;
   height: 100%;
   min-height: 520px;
   object-fit: cover;
+  opacity: 0;
+  transition: opacity 0.45s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.menu-detail-image.loaded {
+  opacity: 1;
 }
 
 .menu-detail-fallback {
