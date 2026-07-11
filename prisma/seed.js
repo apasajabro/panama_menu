@@ -15,7 +15,7 @@ if (process.env.ADMIN_PASSWORD.length < 12) {
 const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL });
 const prisma = new PrismaClient({ adapter });
 
-await import("../menu-data.js");
+await import("../public/menu-data.js");
 const menuItems = globalThis.menuItems || [];
 
 try {
