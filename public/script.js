@@ -355,7 +355,6 @@ const renderMenu = () => {
               class="menu-image-main"
               src="${safeImage}"
               alt="${safeName}"
-              loading="lazy"
               data-menu-initial="${initial}"
               onload="this.classList.add('loaded')"
             />
