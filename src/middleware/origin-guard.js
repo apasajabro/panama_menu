@@ -21,6 +21,6 @@ export const originGuard = (req, _res, next) => {
     return next();
   }
 
-  return next(new HttpError(403, "Origin permintaan tidak diizinkan."));
+  return next(new HttpError(403, "Akses ditolak: Permintaan tidak diizinkan dari domain asal ini demi keamanan data Anda."));
 };
 
