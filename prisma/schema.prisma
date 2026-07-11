@@ -71,7 +71,7 @@ model Category {
 
 model SiteSetting {
   id            String   @id @default("main") @db.VarChar(30)
-  ordersEnabled Boolean  @default(true) @map("orders_enabled")
+  ordersEnabled Boolean  @default(false) @map("orders_enabled")
   heroTitle     String   @default("Makan, ngemil, ngopi — semua ada di sini.") @map("hero_title") @db.VarChar(180)
   heroDescription String @default("Pilih makanan, snack, atau minuman favoritmu langsung dari HP.") @map("hero_description") @db.VarChar(500)
   updatedAt     DateTime @updatedAt @map("updated_at")

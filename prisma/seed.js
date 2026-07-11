@@ -32,7 +32,7 @@ try {
     update: {},
     create: {
       id: "main",
-      ordersEnabled: true,
+      ordersEnabled: false,
       heroTitle: "Makan, ngemil, ngopi — semua ada di sini.",
       heroDescription: "Pilih makanan, snack, atau minuman favoritmu langsung dari HP.",
     },

@@ -88,7 +88,7 @@ let publicCategories = [
   { name: "Snack", slug: "snack" },
   { name: "Minuman", slug: "drink" },
 ];
-let ordersEnabled = true;
+let ordersEnabled = false;
 
 const loadMenusFromApi = async () => {
   try {
