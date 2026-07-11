@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="id">
+  <head><meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="robots" content="noindex, nofollow" /><title>Pengaturan — PANAMA CORNER</title><link rel="stylesheet" href="/dashboard.css" /></head>
+  <body>
+    <div class="dashboard-shell">
+      <aside class="sidebar">
+        <a class="dashboard-brand" href="/dashboard"><span>PC</span><strong>PANAMA CORNER<small>Admin Dashboard</small></strong></a>
+        <nav aria-label="Navigasi dashboard"><a href="/dashboard">Manajemen Menu</a><a href="/dashboard/categories">Kategori</a><a href="/dashboard/payment-methods">Metode Pembayaran</a><a class="active" href="/dashboard/settings">Pengaturan</a><a href="/" target="_blank" rel="noopener">Lihat Menu Publik ↗</a></nav>
+        <button id="logoutButton" class="logout-button" type="button">Keluar</button>
+      </aside>
+      <div class="dashboard-container">
+        <header class="dashboard-topbar">
+          <div class="header-brand-group">
+            <span class="brand-badge-mini">PANAMA CORNER</span>
+            <h1>Pengaturan</h1>
+          </div>
+          <div id="welcomeText" class="user-profile-badge">Memuat akun...</div>
+        </header>
+
+        <main class="dashboard-content">
+          <div class="content-header">
+            <h2>Pengaturan Sistem</h2>
+          </div>
+          <form id="settingsForm" class="settings-layout">
+            <section class="menu-panel"><div class="panel-heading"><div><p>HOMEPAGE</p><h2>Konten Hero</h2><span>Atur headline utama yang pertama dilihat pengunjung.</span></div></div><div class="menu-form embedded-form"><label>Judul Utama<textarea id="heroTitleInput" maxlength="180" rows="2" required></textarea><small><span id="heroTitleCount">0</span>/180 karakter</small></label><label>Deskripsi<textarea id="heroDescriptionInput" maxlength="500" rows="4" required></textarea><small><span id="heroDescriptionCount">0</span>/500 karakter</small></label></div></section>
+            <section class="menu-panel"><div class="panel-heading"><div><p>FITUR</p><h2>Pemesanan</h2><span>Kontrol fitur pemesanan pada homepage.</span></div></div><label class="feature-toggle-card" for="ordersEnabled"><div><strong>Aktifkan pemesanan</strong><span>Jika nonaktif, seluruh tombol Tambah dan keranjang disembunyikan.</span></div><input id="ordersEnabled" type="checkbox" /><i aria-hidden="true"></i></label></section>
+            <p id="settingsMessage" class="form-message" role="status" hidden></p><button id="saveSettingsButton" class="primary-button settings-save" type="submit">Simpan Pengaturan</button>
+          </form>
+        </main>
+      </div>
+    </div>
+    <div id="toast" class="toast" role="status" hidden></div><script src="/admin-common.js"></script><script src="/settings.js"></script>
+  </body>
+</html>

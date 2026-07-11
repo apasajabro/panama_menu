@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Login admin Panama Corner." />
+    <title>Login Admin — PANAMA CORNER</title>
+    <link rel="stylesheet" href="login.css" />
+  </head>
+
+  <body>
+    <main class="login-layout">
+      <section class="brand-panel" aria-labelledby="brandTitle">
+        <a class="back-link" href="/" aria-label="Kembali ke menu">
+          <span aria-hidden="true">←</span> Kembali ke Menu
+        </a>
+
+        <div class="brand-content">
+          <div class="brand-logo" aria-hidden="true">PC</div>
+          <p class="brand-kicker">Cafe Management System</p>
+          <h1 id="brandTitle">PANAMA<br />CORNER</h1>
+          <p class="brand-description">
+            Kelola menu, harga, dan ketersediaan produk dari satu tempat.
+          </p>
+        </div>
+
+        <p class="brand-footer">Food · Coffee · Good Times</p>
+      </section>
+
+      <section class="form-panel" aria-labelledby="loginTitle">
+        <div class="login-card">
+          <div class="mobile-brand" aria-label="PANAMA CORNER">
+            <span>PC</span>
+            <strong>PANAMA CORNER</strong>
+          </div>
+
+          <div class="form-heading">
+            <p>Area khusus pemilik cafe</p>
+            <h2 id="loginTitle">Selamat datang kembali</h2>
+            <span>Masuk menggunakan akun admin PANAMA CORNER.</span>
+          </div>
+
+          <form id="loginForm" class="login-form" novalidate>
+            <label for="email">
+              <span>Email</span>
+              <input
+                id="email"
+                name="email"
+                type="email"
+                placeholder="admin@panamacorner.com"
+                autocomplete="username"
+                required
+              />
+            </label>
+
+            <label for="password">
+              <span>Password</span>
+              <span class="password-wrap">
+                <input
+                  id="password"
+                  name="password"
+                  type="password"
+                  placeholder="Masukkan password"
+                  autocomplete="current-password"
+                  minlength="8"
+                  required
+                />
+                <button
+                  id="togglePassword"
+                  class="toggle-password"
+                  type="button"
+                  aria-label="Tampilkan password"
+                  aria-pressed="false"
+                >
+                  Lihat
+                </button>
+              </span>
+            </label>
+
+            <p id="loginMessage" class="login-message" role="status" hidden></p>
+
+            <button class="login-button" type="submit">Masuk ke Dashboard</button>
+          </form>
+
+          <p class="security-note">
+            Akses dilindungi dan hanya tersedia untuk admin PANAMA CORNER.
+          </p>
+        </div>
+      </section>
+    </main>
+
+    <script src="login.js"></script>
+  </body>
+</html>

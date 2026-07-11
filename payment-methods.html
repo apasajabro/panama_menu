@@ -1,0 +1,337 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="robots" content="noindex, nofollow" />
+    <title>Metode Pembayaran — PANAMA CORNER</title>
+    <link rel="stylesheet" href="/dashboard.css" />
+    <style>
+      /* Dynamic payment method list container */
+      .payment-admin-list {
+        display: grid;
+        gap: 16px;
+      }
+      
+      /* Dynamic payment method item row */
+      .payment-admin-row {
+        display: grid;
+        grid-template-columns: auto 1fr auto auto;
+        align-items: center;
+        gap: 20px;
+        padding: 20px;
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        background: #fff;
+        transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+      }
+      .payment-admin-row:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 24px rgba(6, 21, 13, 0.05);
+        border-color: var(--gold-dark);
+      }
+      
+      /* Badge styles for payment type icon */
+      .payment-icon-wrapper {
+        width: 54px;
+        height: 54px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 14px;
+        font-weight: 800;
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        flex-shrink: 0;
+      }
+      .payment-icon-offline {
+        background: rgba(113, 120, 114, 0.12);
+        color: var(--muted);
+      }
+      .payment-icon-qris {
+        background: rgba(25, 134, 87, 0.12);
+        color: #198657;
+      }
+      .payment-icon-bank {
+        background: rgba(184, 135, 66, 0.12);
+        color: var(--gold-dark);
+      }
+      
+      /* Payment info details */
+      .payment-info {
+        min-width: 0;
+      }
+      .payment-info h3 {
+        margin: 0 0 6px 0;
+        font-size: 16px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-weight: 850;
+      }
+      .payment-info p {
+        margin: 0;
+        font-size: 13px;
+        color: var(--muted);
+        line-height: 1.5;
+      }
+      
+      /* Generic labels / status badges */
+      .payment-badge {
+        font-size: 10px;
+        font-weight: 850;
+        padding: 3px 9px;
+        border-radius: 999px;
+      }
+      .payment-badge-recommended {
+        background: #fcf2db;
+        color: var(--gold-dark);
+      }
+      
+      /* Payment meta details on active status and ordering */
+      .payment-meta {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        gap: 6px;
+        font-size: 12px;
+        color: var(--muted);
+        padding-right: 10px;
+      }
+      
+      /* Action buttons for admin */
+      .payment-actions {
+        display: flex;
+        gap: 8px;
+      }
+      .payment-actions button {
+        min-height: 38px;
+        padding: 0 14px;
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        background: #fff;
+        font-size: 12px;
+        font-weight: 800;
+        transition: all 0.15s ease;
+      }
+      .payment-actions button:hover {
+        background: #fdfaf5;
+        border-color: var(--gold-dark);
+      }
+      .payment-actions .delete-button {
+        color: var(--danger);
+      }
+      .payment-actions .delete-button:hover {
+        background: #fff5f5;
+        border-color: var(--danger);
+      }
+
+      /* Custom styles for dynamic bank accounts list in modal */
+      .accounts-section {
+        border-top: 1px solid var(--line);
+        padding-top: 15px;
+        margin-top: 10px;
+      }
+      .accounts-title {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 12px;
+      }
+      .accounts-title h4 {
+        margin: 0;
+        font-size: 14px;
+        color: var(--gold-dark);
+      }
+      .account-row {
+        display: grid;
+        grid-template-columns: 1fr 1.2fr 1.5fr auto;
+        gap: 10px;
+        align-items: center;
+        margin-bottom: 10px;
+        background: rgba(244, 210, 143, 0.04);
+        padding: 10px;
+        border-radius: 12px;
+        border: 1px solid rgba(231, 223, 212, 0.6);
+      }
+      .account-row input {
+        min-height: 40px !important;
+        padding: 0 12px !important;
+        font-size: 13px !important;
+        border-radius: 8px !important;
+        border: 1px solid var(--line) !important;
+      }
+      .btn-remove-account {
+        width: 36px;
+        height: 36px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        color: var(--danger);
+        background: #fff;
+        font-size: 18px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.15s ease;
+      }
+      .btn-remove-account:hover {
+        background: #fff5f5;
+        border-color: var(--danger);
+      }
+      .qris-thumb {
+        width: 92px;
+        height: 92px;
+        object-fit: contain !important;
+        border: 1px solid var(--line);
+        background: #fff !important;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="dashboard-shell">
+      <aside class="sidebar">
+        <a class="dashboard-brand" href="/dashboard">
+          <span>PC</span>
+          <strong>PANAMA CORNER<small>Admin Dashboard</small></strong>
+        </a>
+        <nav aria-label="Navigasi dashboard">
+          <a href="/dashboard">Manajemen Menu</a>
+          <a href="/dashboard/categories">Kategori</a>
+          <a class="active" href="/dashboard/payment-methods">Metode Pembayaran</a>
+          <a href="/dashboard/settings">Pengaturan</a>
+          <a href="/" target="_blank" rel="noopener">Lihat Menu Publik ↗</a>
+        </nav>
+        <button id="logoutButton" class="logout-button" type="button">Keluar</button>
+      </aside>
+
+      <div class="dashboard-container">
+        <header class="dashboard-topbar">
+          <div class="header-brand-group">
+            <span class="brand-badge-mini">PANAMA CORNER</span>
+            <h1>Metode Pembayaran</h1>
+          </div>
+          <div id="welcomeText" class="user-profile-badge">Memuat akun...</div>
+        </header>
+
+        <main class="dashboard-content">
+          <div class="content-header">
+            <h2>Kelola Metode Pembayaran</h2>
+            <button id="addPaymentButton" class="primary-button" type="button">+ Tambah Metode</button>
+          </div>
+          <section class="menu-panel standalone-panel">
+            <div class="panel-heading">
+              <div>
+                <p>PEMBAYARAN DIGITAL & MANUAL</p>
+                <span>Metode pembayaran yang aktif akan ditampilkan pada form pesanan WhatsApp pelanggan.</span>
+              </div>
+            </div>
+            <div id="loadingState" class="state-box">Memuat metode pembayaran...</div>
+            <div id="paymentMethodsList" class="payment-admin-list"></div>
+          </section>
+        </main>
+      </div>
+    </div>
+
+    <!-- Modal Form Tambah/Edit Metode Pembayaran -->
+    <div id="paymentModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle" hidden>
+      <div class="modal-backdrop" data-close-modal></div>
+      <section class="modal-card">
+        <header>
+          <div>
+            <p>Metode Pembayaran PANAMA CORNER</p>
+            <h2 id="modalTitle">Tambah Metode</h2>
+          </div>
+          <button class="close-button" type="button" data-close-modal aria-label="Tutup">×</button>
+        </header>
+        <form id="paymentForm" class="menu-form">
+          <input id="paymentId" type="hidden" />
+          
+          <label>
+            Nama Metode
+            <input id="paymentName" type="text" maxlength="100" placeholder="Contoh: Transfer Bank Mandiri" required />
+          </label>
+
+          <label>
+            Tipe Metode
+            <select id="paymentType" required>
+              <option value="offline">Bayar di Kasir (Offline)</option>
+              <option value="qris">QRIS (Digital QR)</option>
+              <option value="bank">Transfer Bank (Rekening)</option>
+            </select>
+          </label>
+
+          <label>
+            Deskripsi Singkat
+            <textarea id="paymentDescription" maxlength="500" rows="2" placeholder="Teks penjelasan singkat metode ini..."></textarea>
+          </label>
+
+          <label>
+            Petunjuk Pembayaran
+            <textarea id="paymentInstruction" rows="3" placeholder="Langkah-langkah untuk melakukan pembayaran..."></textarea>
+          </label>
+
+          <div id="qrisFields" hidden>
+            <label>
+              Gambar QRIS
+              <span class="image-upload-box">
+                <input id="qrisImageFile" type="file" accept="image/jpeg,image/png,image/webp" />
+                <span>
+                  <strong>Pilih gambar QRIS</strong>
+                  <small>JPEG, PNG, atau WebP · Maksimal 5 MB</small>
+                </span>
+              </span>
+            </label>
+            <label>
+              Atau URL Gambar QRIS
+              <input id="qrisImageUrl" type="text" maxlength="2000" placeholder="Contoh: /assets/payment/qris.jpg" />
+            </label>
+            <div id="qrisPreview" class="image-preview" hidden></div>
+          </div>
+
+          <div id="bankFields" class="accounts-section" hidden>
+            <div class="accounts-title">
+              <h4>Daftar Rekening Bank</h4>
+              <button id="btnAddAccount" class="secondary-button" style="min-height:32px; padding:0 10px; border-radius:8px; font-size:12px;" type="button">+ Rekening</button>
+            </div>
+            <div id="bankAccountsList"></div>
+          </div>
+
+          <label>
+            Catatan Tambahan
+            <input id="paymentNote" type="text" maxlength="500" placeholder="Contoh: Bukti bayar wajib dikirim lewat WhatsApp." />
+          </label>
+
+          <div class="form-row">
+            <label>
+              Urutan
+              <input id="paymentSortOrder" type="number" min="0" max="9999" value="0" required />
+            </label>
+          </div>
+
+          <label class="switch-field">
+            <input id="paymentRecommended" type="checkbox" />
+            <span>Rekomendasikan metode ini</span>
+          </label>
+
+          <label class="switch-field">
+            <input id="paymentActive" type="checkbox" checked />
+            <span>Aktif (Tampilkan di keranjang belanja)</span>
+          </label>
+
+          <p id="formMessage" class="form-message" role="status" hidden></p>
+          
+          <footer>
+            <button type="button" class="secondary-button" data-close-modal>Batal</button>
+            <button id="savePaymentButton" type="submit" class="primary-button">Simpan Metode</button>
+          </footer>
+        </form>
+      </section>
+    </div>
+
+    <div id="toast" class="toast" role="status" hidden></div>
+
+    <script src="/admin-common.js"></script>
+    <script src="/payment-methods.js"></script>
+  </body>
+</html>

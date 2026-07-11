@@ -37,7 +37,7 @@
         <div class="nav-links" id="navLinks">
           <a href="#menu">Menu</a>
           <a href="#special">Favorit</a>
-          <a href="#reservation">Pesan</a>
+          <a href="#reservation" data-order-feature>Pesan</a>
         </div>
       </nav>
     </header>
@@ -81,7 +81,7 @@
             <img
               src="assets/menu/split-image-10.jpg"
               alt="Ayam Bakar Panama Corner"
-              onerror="this.src = 'assets/menu/split-image-9.jpg'"
+              data-fallback-src="assets/menu/split-image-9.jpg"
             />
             <div class="hero-feature-info">
               <span>Best Seller</span>
@@ -94,7 +94,7 @@
             <img
               src="assets/menu/split-image-4.jpg"
               alt="Mix Platter Panama Corner"
-              onerror="this.src = 'assets/menu/split-image-1.jpg'"
+              data-fallback-src="assets/menu/split-image-1.jpeg"
             />
             <div class="hero-feature-info">
               <span>Snack</span>
@@ -107,7 +107,7 @@
             <img
               src="assets/menu/split-image-9.jpg"
               alt="Nasi Goreng Panama Corner"
-              onerror="this.src = 'assets/menu/split-image-8.jpg'"
+              data-fallback-src="assets/menu/split-image-8.jpg"
             />
             <div class="hero-feature-info">
               <span>Favorite</span>
@@ -189,7 +189,7 @@
         </p>
       </section>
 
-      <section class="reservation" id="reservation">
+      <section class="reservation" id="reservation" data-order-feature>
         <div>
           <p class="eyebrow">Order</p>
           <h2>Ingin pesan atau tanya menu?</h2>
@@ -210,17 +210,77 @@
       </section>
     </main>
 
+    <div
+      class="menu-detail-modal"
+      id="menuDetailModal"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="menuDetailTitle"
+      aria-describedby="menuDetailDescription"
+      hidden
+    >
+      <button
+        class="menu-detail-backdrop"
+        type="button"
+        data-close-detail
+        tabindex="-1"
+        aria-label="Tutup detail menu"
+      ></button>
+      <article class="menu-detail-card">
+        <button
+          class="menu-detail-close"
+          id="closeMenuDetail"
+          type="button"
+          data-close-detail
+          aria-label="Tutup detail menu"
+        >
+          ×
+        </button>
+
+        <div class="menu-detail-media" id="menuDetailMedia"></div>
+
+        <div class="menu-detail-content">
+          <div class="menu-detail-heading">
+            <div>
+              <p class="eyebrow" id="menuDetailCategory">Menu</p>
+              <h2 id="menuDetailTitle">Detail Menu</h2>
+            </div>
+            <strong id="menuDetailPrice">Rp 0</strong>
+          </div>
+
+          <p class="menu-detail-description" id="menuDetailDescription"></p>
+          <div class="menu-detail-tags" id="menuDetailTags"></div>
+
+          <div class="menu-detail-info">
+            <span><small>Status</small><strong>Tersedia</strong></span>
+            <span><small>Brand</small><strong>PANAMA CORNER</strong></span>
+          </div>
+
+          <div class="menu-detail-actions" data-order-feature>
+            <button
+              class="btn btn-primary"
+              id="addDetailToCart"
+              type="button"
+            >
+              Tambah ke Pesanan
+            </button>
+          </div>
+        </div>
+      </article>
+    </div>
+
     <button
       class="cart-button"
       id="cartButton"
       type="button"
       aria-label="Lihat pesanan"
+      data-order-feature
     >
       <span>Pesanan</span>
       <strong id="cartCount">0</strong>
     </button>
 
-    <aside class="cart-drawer" id="cartDrawer" aria-hidden="true">
+    <aside class="cart-drawer" id="cartDrawer" aria-hidden="true" data-order-feature>
       <div class="cart-header">
         <div>
           <p class="eyebrow">Order Preview</p>
@@ -319,10 +379,11 @@
       </div>
     </aside>
 
-    <div class="overlay" id="overlay"></div>
+    <div class="overlay" id="overlay" data-order-feature></div>
 
     <footer class="site-footer">
       <p id="footerText">© 2026 Panama Corner. Digital menu concept.</p>
+      <a class="admin-login-link" href="/login">Login Admin</a>
     </footer>
 
     <script src="config.js"></script>

@@ -16,7 +16,7 @@ const customerNameInput = document.getElementById("customerNameInput");
 const tableNumberInput = document.getElementById("tableNumberInput");
 const orderNoteInput = document.getElementById("orderNoteInput");
 
-const paymentMethodsContainer = document.getElementById("paymentMethods");
+const paymentMethodSelect = document.getElementById("paymentMethodSelect");
 const paymentInstruction = document.getElementById("paymentInstruction");
 
 const navToggle = document.getElementById("navToggle");
@@ -31,6 +31,15 @@ const menuCountLabel = document.getElementById("menuCountLabel");
 const startPriceLabel = document.getElementById("startPriceLabel");
 const directWhatsappButton = document.getElementById("directWhatsappButton");
 const footerText = document.getElementById("footerText");
+const menuDetailModal = document.getElementById("menuDetailModal");
+const closeMenuDetailButton = document.getElementById("closeMenuDetail");
+const menuDetailMedia = document.getElementById("menuDetailMedia");
+const menuDetailCategory = document.getElementById("menuDetailCategory");
+const menuDetailTitle = document.getElementById("menuDetailTitle");
+const menuDetailPrice = document.getElementById("menuDetailPrice");
+const menuDetailDescription = document.getElementById("menuDetailDescription");
+const menuDetailTags = document.getElementById("menuDetailTags");
+const addDetailToCart = document.getElementById("addDetailToCart");
 
 const defaultConfig = {
   restaurantName: "Panama Corner",
@@ -71,16 +80,95 @@ const config =
       }
     : defaultConfig;
 
-const menus = Array.isArray(typeof menuItems !== "undefined" ? menuItems : [])
-  ? menuItems
+let menus = Array.isArray(typeof menuItems !== "undefined" ? menuItems : [])
+  ? menuItems.map((item) => ({ ...item, id: String(item.id) }))
   : [];
+let publicCategories = [
+  { name: "Makanan", slug: "main" },
+  { name: "Snack", slug: "snack" },
+  { name: "Minuman", slug: "drink" },
+];
+let ordersEnabled = true;
 
-const paymentMethods = Array.isArray(config.paymentMethods)
+const loadMenusFromApi = async () => {
+  try {
+    const response = await fetch("/api/menus");
+    if (!response.ok) return;
+    const result = await response.json();
+    if (!Array.isArray(result.data)) return;
+
+    menus = result.data.map((item) => ({
+      id: item.id,
+      name: item.name,
+      category: item.category,
+      price: Number(item.price),
+      image: item.imageUrl || "",
+      description: item.description || "",
+      categoryName: item.categoryName || item.category,
+      tags: [item.categoryName || item.category],
+    }));
+  } catch (_) {
+    // Data statis tetap digunakan jika API sedang tidak tersedia.
+  }
+};
+
+const loadPublicConfiguration = async () => {
+  try {
+    const [categoriesResponse, settingsResponse, paymentResponse] = await Promise.all([
+      fetch("/api/categories"),
+      fetch("/api/settings"),
+      fetch("/api/payment-methods"),
+    ]);
+    if (categoriesResponse.ok) {
+      const result = await categoriesResponse.json();
+      if (Array.isArray(result.data)) publicCategories = result.data;
+    }
+    if (settingsResponse.ok) {
+      const result = await settingsResponse.json();
+      ordersEnabled = result.data?.ordersEnabled !== false;
+      if (result.data?.heroTitle) config.heroTitle = result.data.heroTitle;
+      if (result.data?.heroDescription) config.heroDescription = result.data.heroDescription;
+    }
+    if (paymentResponse.ok) {
+      const result = await paymentResponse.json();
+      if (Array.isArray(result.data) && result.data.length > 0) {
+        paymentMethods = result.data;
+        selectedPaymentMethodId =
+          paymentMethods.find((method) => method.isRecommended)?.id ||
+          paymentMethods[0]?.id ||
+          "";
+      }
+    }
+  } catch (_) {
+    // Konfigurasi default tetap aman saat API tidak tersedia.
+  }
+};
+
+const applyPublicConfiguration = () => {
+  if (categoryTabs) {
+    categoryTabs.innerHTML = [
+      '<button class="tab active" type="button" data-category="all">Semua</button>',
+      ...publicCategories.map((category) => `<button class="tab" type="button" data-category="${escapeHtml(category.slug)}">${escapeHtml(category.name)}</button>`),
+    ].join("");
+  }
+
+  document.querySelectorAll("[data-order-feature]").forEach((element) => {
+    element.hidden = !ordersEnabled;
+  });
+  if (!ordersEnabled) {
+    cart = [];
+    closeCartDrawer();
+  }
+};
+
+let paymentMethods = Array.isArray(config.paymentMethods)
   ? config.paymentMethods
   : defaultConfig.paymentMethods;
 
 let activeCategory = "all";
 let cart = [];
+let selectedDetailMenuId = null;
+let detailPreviousFocus = null;
 let selectedPaymentMethodId =
   paymentMethods.find((method) => method.isRecommended)?.id ||
   paymentMethods[0]?.id ||
@@ -268,7 +356,7 @@ const renderMenu = () => {
               src="${safeImage}"
               alt="${safeName}"
               loading="lazy"
-              onerror="this.closest('.menu-image-stage').innerHTML='<div class=&quot;image-fallback&quot;>${initial}</div>'"
+              data-menu-initial="${initial}"
             />
           </div>
 
@@ -285,10 +373,8 @@ const renderMenu = () => {
             </div>
 
             <div class="card-actions">
-              <button class="add-button" type="button" data-id="${item.id}">
-                Tambah
-              </button>
-              <button class="detail-button" type="button" data-name="${safeName}">
+              ${ordersEnabled ? `<button class="add-button" type="button" data-id="${item.id}">Tambah</button>` : ""}
+              <button class="detail-button" type="button" data-id="${item.id}">
                 Detail
               </button>
             </div>
@@ -301,6 +387,50 @@ const renderMenu = () => {
   if (emptyState) {
     emptyState.hidden = filteredItems.length > 0;
   }
+};
+
+const getCategoryLabel = (item) =>
+  item.categoryName ||
+  publicCategories.find((category) => category.slug === item.category)?.name ||
+  item.category;
+
+const openMenuDetail = (id) => {
+  const item = menus.find((menu) => menu.id === id);
+  if (!item || !menuDetailModal) return;
+
+  selectedDetailMenuId = item.id;
+  detailPreviousFocus = document.activeElement;
+  const initial = getInitial(item.name);
+  const image = item.image
+    ? `<img src="${escapeHtml(item.image)}" alt="${escapeHtml(item.name)}" data-detail-initial="${initial}">`
+    : `<div class="menu-detail-fallback">${initial}</div>`;
+
+  menuDetailMedia.innerHTML = image;
+  setText(menuDetailCategory, getCategoryLabel(item));
+  setText(menuDetailTitle, item.name);
+  setText(menuDetailPrice, formatCurrency(item.price));
+  setText(
+    menuDetailDescription,
+    item.description || "Informasi detail untuk menu ini belum tersedia.",
+  );
+  menuDetailTags.innerHTML = (item.tags || [])
+    .map((tag) => `<span>${escapeHtml(tag)}</span>`)
+    .join("");
+  addDetailToCart.hidden = !ordersEnabled;
+  menuDetailModal.hidden = false;
+  document.body.classList.add("no-scroll");
+  closeMenuDetailButton.focus();
+};
+
+const closeMenuDetail = () => {
+  if (!menuDetailModal || menuDetailModal.hidden) return;
+  menuDetailModal.hidden = true;
+  selectedDetailMenuId = null;
+  if (!cartDrawer?.classList.contains("open")) {
+    document.body.classList.remove("no-scroll");
+  }
+  detailPreviousFocus?.focus?.();
+  detailPreviousFocus = null;
 };
 
 const addToCart = (id) => {
@@ -417,7 +547,7 @@ const renderPaymentInstruction = () => {
             src="${escapeHtml(selectedMethod.qrImage)}"
             alt="QRIS ${escapeHtml(config.restaurantName)}"
             loading="lazy"
-            onerror="this.closest('.qris-preview').innerHTML='<div class=&quot;qris-fallback&quot;>QRIS belum tersedia</div>'"
+            data-qris-image
           />
         </div>
       `
@@ -653,22 +783,31 @@ menuGrid?.addEventListener("click", (event) => {
   const detailButton = event.target.closest(".detail-button");
 
   if (addButton) {
-    addToCart(Number(addButton.dataset.id));
+    addToCart(addButton.dataset.id);
     return;
   }
 
   if (detailButton) {
-    alert(
-      `${detailButton.dataset.name}\n\nSilakan tambahkan ke pesanan atau tanyakan detail ke pelayan.`,
-    );
+    openMenuDetail(detailButton.dataset.id);
   }
+});
+
+menuDetailModal?.addEventListener("click", (event) => {
+  if (event.target.closest("[data-close-detail]")) closeMenuDetail();
+});
+
+addDetailToCart?.addEventListener("click", () => {
+  if (!selectedDetailMenuId || !ordersEnabled) return;
+  addToCart(selectedDetailMenuId);
+  closeMenuDetail();
+  openCart();
 });
 
 cartItems?.addEventListener("click", (event) => {
   const button = event.target.closest("button");
   if (!button) return;
 
-  const id = Number(button.dataset.id);
+  const id = button.dataset.id;
 
   if (button.dataset.action === "increase") {
     increaseCartItem(id);
@@ -730,13 +869,62 @@ navToggle?.addEventListener("click", () => {
 });
 
 document.addEventListener("keydown", (event) => {
+  if (event.key === "Tab" && menuDetailModal && !menuDetailModal.hidden) {
+    const focusable = [...menuDetailModal.querySelectorAll("button:not([tabindex='-1'])")]
+      .filter((element) => !element.hidden && !element.disabled);
+    const first = focusable[0];
+    const last = focusable[focusable.length - 1];
+
+    if (event.shiftKey && document.activeElement === first) {
+      event.preventDefault();
+      last?.focus();
+    } else if (!event.shiftKey && document.activeElement === last) {
+      event.preventDefault();
+      first?.focus();
+    }
+  }
+
   if (event.key === "Escape") {
+    closeMenuDetail();
     closeCartDrawer();
     navLinks?.classList.remove("open");
   }
 });
 
-applyConfigToPage();
-renderMenu();
-renderPaymentMethods();
-renderCart();
+document.addEventListener(
+  "error",
+  (event) => {
+    const image = event.target;
+    if (!(image instanceof HTMLImageElement)) return;
+
+    const fallbackUrl = image.dataset.fallbackSrc;
+    if (fallbackUrl && image.src !== new URL(fallbackUrl, location.href).href) {
+      image.src = fallbackUrl;
+      return;
+    }
+
+    if (image.dataset.menuInitial) {
+      image.closest(".menu-image-stage").innerHTML = `<div class="image-fallback">${escapeHtml(image.dataset.menuInitial)}</div>`;
+    }
+
+    if (image.dataset.detailInitial) {
+      image.closest(".menu-detail-media").innerHTML = `<div class="menu-detail-fallback">${escapeHtml(image.dataset.detailInitial)}</div>`;
+    }
+
+    if (image.hasAttribute("data-qris-image")) {
+      image.closest(".qris-preview").innerHTML = '<div class="qris-fallback">QRIS belum tersedia</div>';
+    }
+  },
+  true,
+);
+
+const initializePage = async () => {
+  await Promise.all([loadMenusFromApi(), loadPublicConfiguration()]);
+  applyPublicConfiguration();
+  applyConfigToPage();
+  renderMenu();
+  renderPaymentMethods();
+  renderCart();
+};
+
+initializePage();

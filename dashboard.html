@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="robots" content="noindex, nofollow" />
+    <title>Manajemen Menu — PANAMA CORNER</title>
+    <link rel="stylesheet" href="/dashboard.css" />
+  </head>
+  <body>
+    <div class="dashboard-shell">
+      <aside class="sidebar">
+        <a class="dashboard-brand" href="/dashboard"><span>PC</span><strong>PANAMA CORNER<small>Admin Dashboard</small></strong></a>
+        <nav aria-label="Navigasi dashboard">
+          <a class="active" href="/dashboard">Manajemen Menu</a>
+          <a href="/dashboard/categories">Kategori</a>
+          <a href="/dashboard/payment-methods">Metode Pembayaran</a>
+          <a href="/dashboard/settings">Pengaturan</a>
+          <a href="/" target="_blank" rel="noopener">Lihat Menu Publik ↗</a>
+        </nav>
+        <button id="logoutButton" class="logout-button" type="button">Keluar</button>
+      </aside>
+
+      <div class="dashboard-container">
+        <header class="dashboard-topbar">
+          <div class="header-brand-group">
+            <span class="brand-badge-mini">PANAMA CORNER</span>
+            <h1>Manajemen Menu</h1>
+          </div>
+          <div id="welcomeText" class="user-profile-badge">Memuat akun...</div>
+        </header>
+
+        <main class="dashboard-content">
+          <div class="content-header">
+            <h2>Ringkasan & Daftar Menu</h2>
+            <button id="addMenuButton" class="primary-button" type="button">+ Tambah Menu</button>
+          </div>
+          <section class="summary-grid" aria-label="Ringkasan menu">
+            <article><span>Total Menu</span><strong id="totalMenu">0</strong></article>
+            <article><span>Tersedia</span><strong id="availableMenu">0</strong></article>
+            <article><span>Tidak Tersedia</span><strong id="unavailableMenu">0</strong></article>
+          </section>
+          <section class="menu-panel">
+            <div class="toolbar">
+              <div class="search-input-wrapper">
+                <span class="search-icon-svg">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                  </svg>
+                </span>
+                <input id="searchMenu" type="text" placeholder="Cari nama menu, deskripsi, atau kategori..." autocomplete="off" />
+                <button id="clearSearchButton" class="clear-search-btn" type="button" aria-label="Bersihkan pencarian" hidden>×</button>
+              </div>
+              <div class="filter-select-wrapper">
+                <select id="categoryFilter" aria-label="Filter kategori"><option value="all">Semua kategori</option></select>
+              </div>
+            </div>
+            <div id="loadingState" class="state-box">Memuat menu...</div>
+            <div id="emptyMenu" class="state-box" hidden>Belum ada menu yang sesuai.</div>
+            <div id="menuList" class="admin-menu-grid"></div>
+          </section>
+        </main>
+      </div>
+    </div>
+
+    <div id="menuModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle" hidden>
+      <div class="modal-backdrop" data-close-modal></div>
+      <section class="modal-card">
+        <header><div><p>Menu PANAMA CORNER</p><h2 id="modalTitle">Tambah Menu</h2></div><button class="close-button" type="button" data-close-modal aria-label="Tutup">×</button></header>
+        <form id="menuForm" class="menu-form">
+          <input id="menuId" type="hidden" />
+          <label>Nama Menu<input id="menuName" type="text" maxlength="150" required /></label>
+          <label>Deskripsi<textarea id="menuDescription" maxlength="2000" rows="3"></textarea></label>
+          <div class="form-row"><label>Harga (Rp)<input id="menuPrice" type="number" min="0" step="1" required /></label><label>Kategori<select id="menuCategory" required></select></label></div>
+          <label>Gambar Menu<span class="image-upload-box"><input id="menuImageFile" type="file" accept="image/jpeg,image/png,image/webp" /><span><strong>Pilih gambar</strong><small>JPEG, PNG, atau WebP · Maksimal 5 MB</small></span></span></label>
+          <label>Atau URL/Path Gambar<input id="menuImageUrl" type="text" maxlength="2000" placeholder="assets/menu/nama-gambar.jpg" /></label>
+          <div id="imagePreview" class="image-preview" hidden></div>
+          <label class="switch-field"><input id="menuAvailable" type="checkbox" checked /><span>Tersedia untuk pelanggan</span></label>
+          <p id="formMessage" class="form-message" role="status" hidden></p>
+          <footer><button type="button" class="secondary-button" data-close-modal>Batal</button><button id="saveMenuButton" type="submit" class="primary-button">Simpan Menu</button></footer>
+        </form>
+      </section>
+    </div>
+    <div id="toast" class="toast" role="status" hidden></div>
+    <script src="/admin-common.js"></script><script src="/dashboard.js"></script>
+  </body>
+</html>

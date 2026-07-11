@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="id">
+  <head><meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="robots" content="noindex, nofollow" /><title>Kategori — PANAMA CORNER</title><link rel="stylesheet" href="/dashboard.css" /></head>
+  <body>
+    <div class="dashboard-shell">
+      <aside class="sidebar">
+        <a class="dashboard-brand" href="/dashboard"><span>PC</span><strong>PANAMA CORNER<small>Admin Dashboard</small></strong></a>
+        <nav aria-label="Navigasi dashboard"><a href="/dashboard">Manajemen Menu</a><a class="active" href="/dashboard/categories">Kategori</a><a href="/dashboard/payment-methods">Metode Pembayaran</a><a href="/dashboard/settings">Pengaturan</a><a href="/" target="_blank" rel="noopener">Lihat Menu Publik ↗</a></nav>
+        <button id="logoutButton" class="logout-button" type="button">Keluar</button>
+      </aside>
+      <div class="dashboard-container">
+        <header class="dashboard-topbar">
+          <div class="header-brand-group">
+            <span class="brand-badge-mini">PANAMA CORNER</span>
+            <h1>Kategori</h1>
+          </div>
+          <div id="welcomeText" class="user-profile-badge">Memuat akun...</div>
+        </header>
+
+        <main class="dashboard-content">
+          <div class="content-header">
+            <h2>Kelola Kategori</h2>
+            <button id="addCategoryButton" class="primary-button" type="button">+ Tambah Kategori</button>
+          </div>
+          <section class="menu-panel standalone-panel">
+            <div class="panel-heading">
+              <div>
+                <p>KATEGORI MENU</p>
+                <span>Kategori nonaktif tidak ditampilkan pada homepage.</span>
+              </div>
+            </div>
+            <div id="loadingState" class="state-box">Memuat kategori...</div>
+            <div id="categoryList" class="category-admin-list"></div>
+          </section>
+        </main>
+      </div>
+    </div>
+    <div id="categoryModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="categoryModalTitle" hidden>
+      <div class="modal-backdrop" data-close-category></div><section class="modal-card compact-modal"><header><div><p>Kategori PANAMA CORNER</p><h2 id="categoryModalTitle">Tambah Kategori</h2></div><button class="close-button" type="button" data-close-category aria-label="Tutup">×</button></header>
+      <form id="categoryForm" class="menu-form"><input id="categoryId" type="hidden" /><label>Nama Kategori<input id="categoryName" type="text" maxlength="100" required /></label><label>Deskripsi<textarea id="categoryDescription" maxlength="1000" rows="3"></textarea></label><label>Urutan<input id="categorySortOrder" type="number" min="0" max="9999" value="0" required /></label><label class="switch-field"><input id="categoryActive" type="checkbox" checked /><span>Aktif di homepage</span></label><p id="categoryFormMessage" class="form-message" role="status" hidden></p><footer><button type="button" class="secondary-button" data-close-category>Batal</button><button id="saveCategoryButton" type="submit" class="primary-button">Simpan Kategori</button></footer></form></section>
+    </div>
+    <div id="toast" class="toast" role="status" hidden></div><script src="/admin-common.js"></script><script src="/categories.js"></script>
+  </body>
+</html>
