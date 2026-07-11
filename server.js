@@ -53,11 +53,11 @@ app.use("/api/settings", settingRoutes);
 app.use("/api/uploads", uploadRoutes);
 app.use("/api/payment-methods", paymentMethodRoutes);
 
-app.get("/login", (_req, res) => res.sendFile(path.join(rootDirectory, "login.html")));
-app.get("/dashboard", (_req, res) => res.sendFile(path.join(rootDirectory, "dashboard.html")));
-app.get("/dashboard/categories", (_req, res) => res.sendFile(path.join(rootDirectory, "categories.html")));
-app.get("/dashboard/payment-methods", (_req, res) => res.sendFile(path.join(rootDirectory, "payment-methods.html")));
-app.get("/dashboard/settings", (_req, res) => res.sendFile(path.join(rootDirectory, "settings.html")));
+app.get("/login", (_req, res) => res.sendFile(path.join(rootDirectory, "public", "login.html")));
+app.get("/dashboard", (_req, res) => res.sendFile(path.join(rootDirectory, "public", "dashboard.html")));
+app.get("/dashboard/categories", (_req, res) => res.sendFile(path.join(rootDirectory, "public", "categories.html")));
+app.get("/dashboard/payment-methods", (_req, res) => res.sendFile(path.join(rootDirectory, "public", "payment-methods.html")));
+app.get("/dashboard/settings", (_req, res) => res.sendFile(path.join(rootDirectory, "public", "settings.html")));
 app.use("/uploads", express.static(path.join(rootDirectory, "uploads"), {
   dotfiles: "deny",
   fallthrough: false,
@@ -66,10 +66,10 @@ app.use("/uploads", express.static(path.join(rootDirectory, "uploads"), {
   setHeaders: (res) => res.setHeader("X-Content-Type-Options", "nosniff"),
 }));
 
-app.use(express.static(rootDirectory, { index: "index.html", dotfiles: "deny" }));
+app.use(express.static(path.join(rootDirectory, "public"), { index: "index.html", dotfiles: "deny" }));
 app.use((req, res, next) => {
   if (req.path.startsWith("/api/")) return notFound(req, res);
-  if (req.accepts("html")) return res.status(404).sendFile(path.join(rootDirectory, "404.html"));
+  if (req.accepts("html")) return res.status(404).sendFile(path.join(rootDirectory, "public", "404.html"));
   return next();
 });
 app.use(notFound);
